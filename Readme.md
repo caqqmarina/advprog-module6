@@ -39,3 +39,18 @@ In this commit, I implemented validation of incoming requests and selective resp
 - Maintained the same response structure but with dynamic content based on request
 
 This implementation creates a more realistic web server that can handle different routes and respond appropriately to both valid and invalid requests.
+
+# Commit 4 Reflection Notes
+
+In this commit, I simulated and observed the limitations of a single-threaded web server:
+
+- Added code to artificially delay responses for the "/sleep" endpoint using `thread::sleep`
+- The server waits for 10 seconds before responding to requests to "/sleep"
+- Tested the server by opening two browser windows simultaneously
+- Observed that when one browser requests "/sleep", the second browser's request to "/" is blocked
+- Realized that a single-threaded server can only process one request at a time
+- Identified a critical limitation: slow requests block all subsequent requests
+- Understood why this behavior occurs: the server is using a single thread to handle all connections
+- Recognized that this architecture would not scale in real-world applications with many users
+
+This simulation demonstrates why multi-threading or asynchronous processing is essential for web servers that need to handle concurrent connections efficiently.
