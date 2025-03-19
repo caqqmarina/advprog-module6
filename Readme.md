@@ -54,3 +54,20 @@ In this commit, I simulated and observed the limitations of a single-threaded we
 - Recognized that this architecture would not scale in real-world applications with many users
 
 This simulation demonstrates why multi-threading or asynchronous processing is essential for web servers that need to handle concurrent connections efficiently.
+
+# Commit 5 Reflection Notes
+
+In this commit, I implemented a multithreaded web server using a ThreadPool:
+
+- Created a ThreadPool library to manage a pool of worker threads
+- Used the `mpsc` (multi-producer, single-consumer) channel to communicate between threads
+- Implemented a Job type as a boxed closure that can be executed by worker threads
+- Used `Arc<Mutex<>>` to safely share the receiver between multiple threads
+- Created worker threads that wait for jobs and execute them when received
+- Modified the main server to use the ThreadPool for handling connections
+- Implemented proper shutdown mechanism for the ThreadPool using the Drop trait
+- Used message passing to communicate between the main thread and worker threads
+- Verified that slow requests no longer block other requests from being processed
+- Tested concurrent processing by accessing "/sleep" in one browser and "/" in another
+
+This implementation demonstrates how concurrent programming can significantly improve the performance and responsiveness of a web server. The ThreadPool pattern allows the server to handle multiple connections simultaneously while limiting the total number of threads to a fixed size, preventing resource exhaustion.
