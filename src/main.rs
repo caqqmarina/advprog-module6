@@ -9,7 +9,13 @@ use std::{
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
-    let pool = ThreadPool::new(4); 
+    let pool = match ThreadPool::builder().size(4).name("WebServer".to_string()).build() {
+        Ok(pool) => pool,
+        Err(e) => {
+            eprintln!("Failed to build ThreadPool: {}", e);
+            std::process::exit(1);
+        }
+    };
 
     println!("Listening on http://127.0.0.1:7878");
 

@@ -100,3 +100,58 @@ impl Worker {
 //     NewJob(Job),
 //     Terminate,
 // }
+
+pub struct ThreadPoolBuilder {
+    size: Option<usize>,
+    name: Option<String>,
+}
+
+impl ThreadPoolBuilder {
+    pub fn new() -> Self {
+        ThreadPoolBuilder {
+            size: None,
+            name: None,
+        }
+    }
+
+    pub fn size(mut self, size: usize) -> Self {
+        self.size = Some(size);
+        self
+    }
+
+    pub fn name(mut self, name: String) -> Self {
+        self.name = Some(name);
+        self
+    }
+
+    pub fn build(self) -> Result<ThreadPool, String> {
+        let size = self.size.ok_or("Thread pool size not specified")?;
+        
+        if size == 0 {
+            return Err("Thread pool size cannot be zero".to_string());
+        }
+
+        let pool_name = self.name.unwrap_or("ThreadPool".to_string());
+
+        let (sender, receiver) = mpsc::channel();
+        let receiver = Arc::new(Mutex::new(receiver));
+
+        let mut workers = Vec::with_capacity(size);
+
+        for id in 0..size {
+            if let Some(name) = &self.name {
+                println!("Creating worker {} in pool '{}'", id, name);
+            }
+            workers.push(Worker::new(id, Arc::clone(&receiver)));
+        }
+
+        Ok(ThreadPool { workers, sender })
+    }
+}
+
+// Add this to the ThreadPool impl block
+impl ThreadPool {
+    pub fn builder() -> ThreadPoolBuilder {
+        ThreadPoolBuilder::new()
+    }
+}

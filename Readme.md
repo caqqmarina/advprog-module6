@@ -71,3 +71,23 @@ In this commit, I implemented a multithreaded web server using a ThreadPool:
 - Tested concurrent processing by accessing "/sleep" in one browser and "/" in another
 
 This implementation demonstrates how concurrent programming can significantly improve the performance and responsiveness of a web server. The ThreadPool pattern allows the server to handle multiple connections simultaneously while limiting the total number of threads to a fixed size, preventing resource exhaustion.
+
+# Commit Bonus Reflection Notes
+
+In this bonus implementation, I improved the ThreadPool creation by implementing the Builder pattern:
+
+- Created a `ThreadPoolBuilder` struct to replace direct instantiation via `ThreadPool::new()`
+- Implemented a fluent interface with chainable methods (`size()`, `name()`)
+- Added proper error handling with `Result<ThreadPool, String>` instead of panicking
+- Made thread pool size a required parameter, enforced at compile time
+- Added an optional parameter for naming the thread pool
+- Provided better diagnostics with more specific error messages
+- Added the ability to expand with more options in the future without breaking the API
+- Enhanced the user experience by creating a more declarative configuration style
+- Implemented a cleaner separation between configuration and object creation
+
+Comparing the approaches:
+1. **Constructor approach**: Simple but rigid - `let pool = ThreadPool::new(4);`
+2. **Builder pattern**: Flexible and expressive - `let pool = ThreadPool::builder().size(4).name("WebServer").build()?;`
+
+The builder pattern provides significant advantages in complex object creation scenarios by making the code more readable, maintainable, and adaptable to future requirements.
